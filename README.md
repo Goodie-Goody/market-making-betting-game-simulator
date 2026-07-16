@@ -14,7 +14,7 @@ python scaffold.py
 - [x] **2.** one_reroll_die_value
 - [x] **3.** pay_per_reroll_die_game
 - [x] **4.** red_black_card_game_value
-- [ ] **5.** make_quotes
+- [x] **5.** make_quotes
 - [ ] **6.** execute_trade
 - [ ] **7.** mark_to_market_pnl
 - [ ] **8.** adverse_selection_loss

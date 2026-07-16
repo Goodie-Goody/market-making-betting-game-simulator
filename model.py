@@ -171,8 +171,19 @@ def red_black_card_game_value(num_red, num_black):
         'stop_now': stop_now
     }
 
-# Step 5 - make_quotes (not yet solved)
-# TODO: implement
+# Step 5 - make_quotes
+def make_quotes(fair_value, spread_width):
+    """
+    Generates symmetric two-sided quotes around a fair value.
+    """
+    # Calculate the half-spread distance from the midpoint
+    half_spread = spread_width / 2.0
+    
+    # Subtract half-spread for the buy price, add for the sell price
+    return {
+        'bid': float(fair_value - half_spread),
+        'ask': float(fair_value + half_spread)
+    }
 
 # Step 6 - execute_trade (not yet solved)
 # TODO: implement
