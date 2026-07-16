@@ -11,7 +11,7 @@ python scaffold.py
 ## Steps
 
 - [x] **1.** expected_value
-- [ ] **2.** one_reroll_die_value
+- [x] **2.** one_reroll_die_value
 - [ ] **3.** pay_per_reroll_die_game
 - [ ] **4.** red_black_card_game_value
 - [ ] **5.** make_quotes

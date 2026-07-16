@@ -29,8 +29,37 @@ def expected_value(values, probabilities):
     
     return float(weighted_sum)
 
-# Step 2 - one_reroll_die_value (not yet solved)
-# TODO: implement
+# Step 2 - one_reroll_die_value
+def one_reroll_die_value(sides):
+    """
+    Computes the optimal keep-or-reroll strategy and expected winnings for an N-sided die.
+    
+    Args:
+        sides (int): The number of faces on the die (1 to sides).
+        
+    Returns:
+        dict: A dictionary containing 'value' (expected winnings) and 'reroll_faces' (list of integers).
+    """
+    # Create the die faces
+    faces = list(range(1, sides + 1))
+    probs = [1 / sides] * sides
+    
+    # 1. Calculate the baseline expected value of a single roll
+    e_single_roll = expected_value(faces, probs)
+    
+    # 2. Identify the optimal policy: reroll any face worse than or equal to our reroll baseline
+    reroll_faces = [face for face in faces if face < e_single_roll]
+    
+    # 3. Build the effective payouts for each possible first roll under optimal play
+    optimal_payouts = [max(face, e_single_roll) for face in faces]
+    
+    # 4. Calculate the total expected winnings of the game
+    e_game = expected_value(optimal_payouts, probs)
+    
+    return {
+        'value': e_game,
+        'reroll_faces': reroll_faces
+    }
 
 # Step 3 - pay_per_reroll_die_game (not yet solved)
 # TODO: implement
