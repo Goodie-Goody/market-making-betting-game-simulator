@@ -61,8 +61,45 @@ def one_reroll_die_value(sides):
         'reroll_faces': reroll_faces
     }
 
-# Step 3 - pay_per_reroll_die_game (not yet solved)
-# TODO: implement
+# Step 3 - pay_per_reroll_die_game
+def pay_per_reroll_die_game(sides, reroll_cost):
+    """
+    Finds the optimal keep threshold and expected net winnings for an infinite reroll game with costs.
+    
+    Args:
+        sides (int): The number of faces on the die (1 to sides).
+        reroll_cost (float): The cost paid each time a reroll is chosen.
+        
+    Returns:
+        dict: {'threshold': int, 'value': float} representing the optimal strategy and expected winnings.
+    """
+    best_threshold = 1
+    best_value = float('-inf')
+    
+    # Test every candidate threshold from 1 up to 'sides'
+    for threshold in range(1, sides + 1):
+        # 1. Count how many faces cause us to keep vs. reroll
+        num_keep = sides - threshold + 1
+        num_reroll = threshold - 1
+        
+        # 2. Calculate the average gross payout of the faces we keep
+        e_keep = (threshold + sides) / 2.0
+        
+        # 3. Calculate the expected number of rerolls before landing on a keep face
+        expected_rerolls = num_reroll / num_keep
+        
+        # 4. Calculate net expected value for this threshold
+        net_value = e_keep - (expected_rerolls * reroll_cost)
+        
+        # 5. Update best strategy
+        if net_value > best_value:
+            best_value = net_value
+            best_threshold = threshold
+            
+    return {
+        'threshold': best_threshold,
+        'value': float(best_value)
+    }
 
 # Step 4 - red_black_card_game_value (not yet solved)
 # TODO: implement
