@@ -101,8 +101,75 @@ def pay_per_reroll_die_game(sides, reroll_cost):
         'value': float(best_value)
     }
 
-# Step 4 - red_black_card_game_value (not yet solved)
-# TODO: implement
+# Step 4 - red_black_card_game_value
+def red_black_card_game_value(num_red, num_black):
+    # TODO: return {'value': expected payout under optimal stopping, 'stop_now': whether to stop immediately}.
+    pass
+from functools import lru_cache
+
+def red_black_card_game_value(num_red, num_black):
+    """
+    Computes the optimal expected payout and initial stop decision for the Red-Black card game.
+    
+    Args:
+        num_red (int): Initial number of red cards (+1 value).
+        num_black (int): Initial number of black cards (-1 value).
+        
+    Returns:
+        dict: {'value': float, 'stop_now': bool}
+    """
+    
+    @lru_cache(maxsize=None)
+    def get_continuation_value(r, b):
+        # Base Case 1: No cards left, or only Black cards left (-1 each). 
+        # We would never draw a black card on purpose, so our future gain is 0.
+        if r == 0:
+            return 0.0
+            
+        # Base Case 2: Only Red cards left (+1 each). 
+        # We draw all of them for a guaranteed win!
+        if b == 0:
+            return float(r)
+            
+        # Recursive Case: We have both red and black cards remaining.
+        total_cards = r + b
+        prob_red = r / total_cards
+        prob_black = b / total_cards
+        
+        # If we draw Red (+1), we transition to state (r - 1, b)
+        # If we draw Black (-1), we transition to state (r, b - 1)
+        expected_draw_value = (
+            prob_red * (1.0 + get_continuation_value(r - 1, b)) +
+            prob_black * (-1.0 + get_continuation_value(r, b - 1))
+        )
+        
+        # Optimal policy: We can stop at any time for 0 additional payout.
+        # So the value of this state is the maximum between stopping (0.0) and drawing.
+        return max(0.0, expected_draw_value)
+
+    # Calculate the raw expected value of drawing from our starting deck WITHOUT taking max(0, ...) yet
+    # Why? Because we need to know if the draw itself is <= 0 to determine if we should stop immediately!
+    if num_red == 0:
+        raw_draw_value = 0.0
+    elif num_black == 0:
+        raw_draw_value = float(num_red)
+    else:
+        total = num_red + num_black
+        raw_draw_value = (
+            (num_red / total) * (1.0 + get_continuation_value(num_red - 1, num_black)) +
+            (num_black / total) * (-1.0 + get_continuation_value(num_red, num_black - 1))
+        )
+    
+    # We stop immediately if drawing yields 0 or negative expected value
+    stop_now = (raw_draw_value <= 0.0)
+    
+    # Our final game value is at least 0 (since we can just choose to stop immediately)
+    game_value = max(0.0, raw_draw_value)
+    
+    return {
+        'value': float(game_value),
+        'stop_now': stop_now
+    }
 
 # Step 5 - make_quotes (not yet solved)
 # TODO: implement
