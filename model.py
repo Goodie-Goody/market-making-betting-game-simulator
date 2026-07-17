@@ -237,8 +237,24 @@ def uncertainty_spread(base_spread, uncertainty):
     # Adding a positive multiple of uncertainty guarantees strict growth above base_spread
     return float(base_spread + (2.0 * uncertainty))
 
-# Step 10 - inventory_skewed_quotes (not yet solved)
-# TODO: implement
+# Step 10 - inventory_skewed_quotes
+def inventory_skewed_quotes(fair_value, spread_width, inventory, skew_strength):
+    """
+    Generates two-sided quotes shifted against current inventory to manage risk.
+    """
+    # 1. Calculate the inventory penalty: shift downward when long (+), upward when short (-)
+    skew_shift = skew_strength * inventory
+    
+    # 2. Adjust the midpoint by subtracting the shift
+    skewed_mid = fair_value - skew_shift
+    
+    # 3. Apply the half-spread symmetrically around the new skewed midpoint
+    half_spread = spread_width / 2.0
+    
+    return {
+        'bid': float(skewed_mid - half_spread),
+        'ask': float(skewed_mid + half_spread)
+    }
 
 # Step 11 - update_fair_value_from_trade (not yet solved)
 # TODO: implement

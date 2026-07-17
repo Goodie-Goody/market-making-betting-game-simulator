@@ -19,7 +19,7 @@ python scaffold.py
 - [x] **7.** mark_to_market_pnl
 - [x] **8.** adverse_selection_loss
 - [x] **9.** uncertainty_spread
-- [ ] **10.** inventory_skewed_quotes
+- [x] **10.** inventory_skewed_quotes
 - [ ] **11.** update_fair_value_from_trade
 - [ ] **12.** update_remaining_card_value
 - [ ] **13.** run_market_making_episode
