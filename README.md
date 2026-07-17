@@ -16,7 +16,7 @@ python scaffold.py
 - [x] **4.** red_black_card_game_value
 - [x] **5.** make_quotes
 - [x] **6.** execute_trade
-- [ ] **7.** mark_to_market_pnl
+- [x] **7.** mark_to_market_pnl
 - [ ] **8.** adverse_selection_loss
 - [ ] **9.** uncertainty_spread
 - [ ] **10.** inventory_skewed_quotes

@@ -204,8 +204,13 @@ def execute_trade(state, side, bid, ask, size=1.0):
         # Fallback to unchanged state if an unknown trade side is passed
         return {'cash': cash, 'inventory': inv}
 
-# Step 7 - mark_to_market_pnl (not yet solved)
-# TODO: implement
+# Step 7 - mark_to_market_pnl
+def mark_to_market_pnl(cash, inventory, settlement_value):
+    """
+    Computes total profit and loss by valuing remaining inventory at the final settlement price.
+    """
+    # Total PnL is cash balance plus the liquidation value of inventory
+    return float(cash + (inventory * settlement_value))
 
 # Step 8 - adverse_selection_loss (not yet solved)
 # TODO: implement
