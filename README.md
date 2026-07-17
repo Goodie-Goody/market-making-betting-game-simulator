@@ -22,7 +22,7 @@ python scaffold.py
 - [x] **10.** inventory_skewed_quotes
 - [x] **11.** update_fair_value_from_trade
 - [x] **12.** update_remaining_card_value
-- [ ] **13.** run_market_making_episode
+- [x] **13.** run_market_making_episode
 - [ ] **14.** summarize_episode_pnls
 
 ---

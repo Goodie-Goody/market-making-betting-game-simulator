@@ -293,8 +293,53 @@ def update_remaining_card_value(remaining_counts, revealed_value):
         'expected_value': float(expected_value(vals, probs))
     }
 
-# Step 13 - run_market_making_episode (not yet solved)
-# TODO: implement
+# Step 13 - run_market_making_episode
+def run_market_making_episode(true_value, counterparty_sides, initial_fair_value, config):
+    """
+    Simulates a complete market-making episode across multiple trading rounds.
+    """
+    # Initialize state and pull config parameters with safe defaults
+    cash, inv, fv = 0.0, 0.0, float(initial_fair_value)
+    base_spread = config.get('base_spread', 0.0)
+    uncertainty = config.get('uncertainty', 0.0)
+    skew_strength = config.get('skew_strength', 0.0)
+    belief_adjustment = config.get('belief_adjustment', 0.0)
+    
+    history = []
+    
+    # Iterate through each round's counterparty action in chronological order
+    for side in counterparty_sides:
+        # Calculate spread and generate inventory-skewed quotes BEFORE the trade
+        sw = uncertainty_spread(base_spread, uncertainty)
+        q = inventory_skewed_quotes(fv, sw, inv, skew_strength)
+        
+        # Execute trade against quotes and update running balances
+        st = execute_trade({'cash': cash, 'inventory': inv}, side, q['bid'], q['ask'])
+        cash, inv = st['cash'], st['inventory']
+        
+        # Update fair-value estimate AFTER observing counterparty order flow
+        fv = update_fair_value_from_trade(fv, side, q['bid'], q['ask'], belief_adjustment)
+        
+        # Record post-trade snapshot for this round
+        history.append({
+            'bid': q['bid'],
+            'ask': q['ask'],
+            'side': side,
+            'cash': cash,
+            'inventory': inv,
+            'fair_value': fv
+        })
+        
+    # Liquidate final inventory against true_value to compute total PnL
+    pnl = mark_to_market_pnl(cash, inv, true_value)
+    
+    return {
+        'pnl': float(pnl),
+        'cash': float(cash),
+        'inventory': float(inv),
+        'fair_value': float(fv),
+        'history': history
+    }
 
 # Step 14 - summarize_episode_pnls (not yet solved)
 # TODO: implement
