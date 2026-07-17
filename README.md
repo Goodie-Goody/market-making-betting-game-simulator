@@ -23,7 +23,7 @@ python scaffold.py
 - [x] **11.** update_fair_value_from_trade
 - [x] **12.** update_remaining_card_value
 - [x] **13.** run_market_making_episode
-- [ ] **14.** summarize_episode_pnls
+- [x] **14.** summarize_episode_pnls
 
 ---
 

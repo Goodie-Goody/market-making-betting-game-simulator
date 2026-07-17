@@ -341,6 +341,20 @@ def run_market_making_episode(true_value, counterparty_sides, initial_fair_value
         'history': history
     }
 
-# Step 14 - summarize_episode_pnls (not yet solved)
-# TODO: implement
+# Step 14 - summarize_episode_pnls
+import numpy as np
+
+def summarize_episode_pnls(pnls):
+    """
+    Computes summary performance statistics across simulated episodes.
+    """
+    # Convert input sequence to a uniform NumPy float array
+    arr = np.asarray(pnls, dtype=float)
+    
+    # Calculate mean, population std (ddof=0 default), and minimum PnL as native floats
+    return {
+        'mean': float(arr.mean()),
+        'std': float(arr.std(ddof=0)),
+        'worst': float(arr.min())
+    }
 
