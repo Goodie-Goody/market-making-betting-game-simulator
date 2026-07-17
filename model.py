@@ -264,8 +264,34 @@ def update_fair_value_from_trade(fair_value, side, bid, ask, adjustment):
     # Counterparty 'buy' is bullish (+1), 'sell' is bearish (-1); scale by half-spread * adjustment
     return float(fair_value + ((1 if side == 'buy' else -1) * adjustment * ((ask - bid) / 2.0)))
 
-# Step 12 - update_remaining_card_value (not yet solved)
-# TODO: implement
+# Step 12 - update_remaining_card_value
+def update_remaining_card_value(remaining_counts, revealed_value):
+    """
+    Updates deck counts after a reveal and computes the new expected value.
+    """
+    # Make a shallow copy to prevent mutating the input dictionary
+    updated_counts = dict(remaining_counts)
+    
+    # Decrement the revealed card's count and delete the key if it reaches zero
+    if revealed_value in updated_counts:
+        updated_counts[revealed_value] -= 1
+        if updated_counts[revealed_value] <= 0:
+            del updated_counts[revealed_value]
+            
+    # Sum the remaining card counts to check for an empty deck
+    total_cards = sum(updated_counts.values())
+    if total_cards == 0:
+        return {'remaining_counts': updated_counts, 'expected_value': 0.0}
+        
+    # Build parallel lists of unique card values and their probability weights
+    vals = list(updated_counts.keys())
+    probs = [count / total_cards for count in updated_counts.values()]
+    
+    # Compute the new mean using your Step 0 expected_value primitive
+    return {
+        'remaining_counts': updated_counts,
+        'expected_value': float(expected_value(vals, probs))
+    }
 
 # Step 13 - run_market_making_episode (not yet solved)
 # TODO: implement
