@@ -185,8 +185,24 @@ def make_quotes(fair_value, spread_width):
         'ask': float(fair_value + half_spread)
     }
 
-# Step 6 - execute_trade (not yet solved)
-# TODO: implement
+# Step 6 - execute_trade
+def execute_trade(state, side, bid, ask, size=1.0):
+    """
+    Applies a counterparty trade against quoted prices and returns a new updated state.
+    """
+    # Extract current balance and inventory without mutating original state
+    cash = state['cash']
+    inv = state['inventory']
+    
+    if side == 'buy':
+        # Counterparty buys from you -> YOU sell at ask: cash up, inventory down
+        return {'cash': cash + (size * ask), 'inventory': inv - size}
+    elif side == 'sell':
+        # Counterparty sells to you -> YOU buy at bid: cash down, inventory up
+        return {'cash': cash - (size * bid), 'inventory': inv + size}
+    else:
+        # Fallback to unchanged state if an unknown trade side is passed
+        return {'cash': cash, 'inventory': inv}
 
 # Step 7 - mark_to_market_pnl (not yet solved)
 # TODO: implement
