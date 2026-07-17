@@ -229,8 +229,13 @@ def adverse_selection_loss(fair_value, bid, ask, informed_values, informed_proba
     # Return the weighted average loss across all possible true values as a Python float
     return float(np.dot(loss_per_val, p))
 
-# Step 9 - uncertainty_spread (not yet solved)
-# TODO: implement
+# Step 9 - uncertainty_spread
+def uncertainty_spread(base_spread, uncertainty):
+    """
+    Computes a spread width that scales linearly with uncertainty above a minimum floor.
+    """
+    # Adding a positive multiple of uncertainty guarantees strict growth above base_spread
+    return float(base_spread + (2.0 * uncertainty))
 
 # Step 10 - inventory_skewed_quotes (not yet solved)
 # TODO: implement
