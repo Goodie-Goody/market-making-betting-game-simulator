@@ -1,5 +1,7 @@
 # Market-Making Microstructure Lab
 
+**[→ View the interactive project page](https://goodie-goody.github.io/market-making-betting-game-simulator/)** &nbsp;·&nbsp; **[→ Open the notebook](Market_Making_Microstructure_Lab.ipynb)**
+
 A simulation study of the three risks a market maker actually faces —
 **inventory risk, adverse selection, and quote execution** — and which quoting
 policy survives under which market conditions.
@@ -52,7 +54,7 @@ jupyter notebook Market_Making_Microstructure_Lab.ipynb
 Everything runs off a single seeded RNG stream, so the notebook is fully
 reproducible top-to-bottom.
 
-## Limitations
+## Limitations (stated plainly)
 
 Informed traders know the exact terminal value (a strong form of adverse selection);
 the mid is a constant-volatility arithmetic random walk; one unit per fill, no queue

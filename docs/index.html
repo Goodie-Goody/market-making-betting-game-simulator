@@ -1,263 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Market-Making &amp; Betting-Game Simulator — Built on Deep-ML</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #09090b;
-      --surface: #18181b;
-      --surface-alt: #27272a;
-      --border: #27272a;
-      --text: #fafafa;
-      --text-muted: #a1a1a6;
-      --accent: #fafafa;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Market-Making Microstructure Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --surface:#fafafa; --surface-alt:#f4f4f5; --border:#e4e4e7;
+    --text:#18181b; --text-muted:#71717a; --accent:#18181b;
+    --green:#16a34a; --blue:#2563eb; --red:#dc2626;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#09090b; --surface:#18181b; --surface-alt:#27272a; --border:#27272a;
+      --text:#fafafa; --text-muted:#a1a1a6; --accent:#fafafa;
+      --green:#4ade80; --blue:#60a5fa; --red:#f87171;
     }
   }
-  :root {
-    --bg: #ffffff;
-    --surface: #fafafa;
-    --surface-alt: #f4f4f5;
-    --border: #e4e4e7;
-    --text: #18181b;
-    --text-muted: #71717a;
-    --accent: #18181b;
-    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-    --sans: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    scroll-behavior: smooth;
-  }
-
-  .theme-toggle {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 100;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-  }
-  .theme-toggle:hover {
-    border-color: var(--text);
-  }
-  .theme-toggle svg {
-    width: 20px;
-    height: 20px;
-    stroke: var(--text);
-    fill: none;
-    stroke-width: 2;
-  }
-
-  .hero {
-    position: relative;
-    min-height: 600px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-alt) 100%);
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.05"/></svg>');
-    opacity: 0.3;
-    animation: drift 20s ease-in-out infinite;
-  }
-  @keyframes drift {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(10px, -10px); }
-  }
-  .hero-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    animation: fadeInUp 0.8s ease-out;
-  }
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .hero h1 {
-    font-family: var(--mono);
-    font-size: 48px;
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
-
-  .wrap { max-width: 900px; margin: 0 auto; padding: 96px 24px; }
-
-  .section {
-    scroll-margin-top: 100px;
-    animation: fadeIn 0.6s ease-out;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  .section-title {
-    font-family: var(--mono);
-    font-size: 14px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin: 0 0 32px;
-    font-weight: 600;
-  }
-  .input-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 32px;
-    margin-bottom: 64px;
-  }
-  .output-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 32px;
-    margin-bottom: 96px;
-    min-height: 100px;
-  }
-
-  .how-section { margin-bottom: 96px; }
-  .part-reveal {
-    margin-bottom: 48px;
-    animation: slideInLeft 0.6s ease-out;
-  }
-  @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  .part-title {
-    font-family: var(--mono);
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0 0 16px;
-    color: var(--text);
-  }
-  .part-description {
-    color: var(--text-muted);
-    margin-bottom: 24px;
-    line-height: 1.7;
-  }
-  .diagram-container {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 250px;
-  }
-  .diagram-container svg {
-    max-width: 100%;
-    height: auto;
-    color: var(--text);
-  }
-
-  .footer {
-    text-align: center;
-    padding-top: 48px;
-    border-top: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 13px;
-  }
-  .footer a {
-    color: var(--text);
-    text-decoration: none;
-  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px;}
+  header{padding:72px 0 40px;border-bottom:1px solid var(--border);}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:0 0 14px;}
+  h1{font-size:clamp(30px,5vw,44px);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin:0 0 16px;}
+  .lede{font-size:18px;color:var(--text-muted);max-width:640px;margin:0 0 28px;}
+  .btns{display:flex;gap:12px;flex-wrap:wrap;}
+  a.btn{display:inline-block;font-size:14px;font-weight:600;text-decoration:none;padding:11px 18px;border-radius:9px;border:1px solid var(--border);}
+  a.btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent);}
+  a.btn.ghost{background:transparent;color:var(--text);}
+  a.btn:hover{opacity:.85;}
+  section{padding:44px 0;border-bottom:1px solid var(--border);}
+  h2{font-size:13px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin:0 0 20px;font-weight:600;}
+  h3{font-size:20px;font-weight:650;letter-spacing:-.01em;margin:0 0 10px;}
+  p{margin:0 0 16px;}
+  .muted{color:var(--text-muted);}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .card h3{font-size:16px;margin-bottom:6px;}
+  .card p{font-size:14px;color:var(--text-muted);margin:0;}
+  .formula{background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:16px 18px;font-family:var(--mono);font-size:14px;overflow-x:auto;margin:0 0 16px;}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px;}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--border);}
+  th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);font-weight:600;}
+  td.num{font-family:var(--mono);text-align:right;}
+  .win{color:var(--green);font-weight:600;}
+  .lose{color:var(--red);font-weight:600;}
+  .legend{font-size:13px;color:var(--text-muted);margin-top:14px;}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:18px 20px;font-size:15px;}
+  ul.tidy{margin:0;padding-left:20px;color:var(--text-muted);font-size:14px;}
+  ul.tidy li{margin-bottom:7px;}
+  footer{padding:40px 0 64px;color:var(--text-muted);font-size:13px;}
+  footer a{color:var(--text);}
+  .toggle{position:fixed;top:18px;right:18px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 11px;font-size:12px;font-family:var(--mono);color:var(--text-muted);cursor:pointer;}
 </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
-    <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-  </button>
+<button class="toggle" onclick="toggleTheme()">theme</button>
+<div class="wrap">
 
-  <section class="hero" id="hero">
-    <div class="hero-content">
-      <h1>Market-Making &amp; Betting-Game Simulator</h1>
+  <header>
+    <p class="eyebrow">Quantitative Microstructure &middot; Simulation Study</p>
+    <h1>Market-Making Microstructure Lab</h1>
+    <p class="lede">A market-making simulator where order flow actually responds to your quotes &mdash; used to ask which quoting policy survives inventory risk and toxic flow, and under which market conditions.</p>
+    <div class="btns">
+      <a class="btn primary" href="https://github.com/Goodie-Goody/market-making-betting-game-simulator/blob/main/Market_Making_Microstructure_Lab.ipynb">Open the notebook</a>
+      <a class="btn ghost" href="https://github.com/Goodie-Goody/market-making-betting-game-simulator">View on GitHub</a>
+    </div>
+  </header>
+
+  <section>
+    <h2>The question</h2>
+    <h3>Can a market maker earn the spread without being run over?</h3>
+    <p class="muted">A market maker quotes a bid and an ask at the same time, hoping to earn the difference as others trade against both sides. Three forces work against that &mdash; and the interesting question is not "does market-making work" but <em>which quoting rule holds up, and when</em>.</p>
+  </section>
+
+  <section>
+    <h2>The three risks</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Inventory risk</h3>
+        <p>Fills are random, so you drift into a net long or short position. While you hold it, the price moves &mdash; an unwanted directional bet.</p>
+      </div>
+      <div class="card">
+        <h3>Adverse selection</h3>
+        <p>Some counterparties know more than you. Informed flow trades with you only when it profits <em>them</em> &mdash; exactly when it costs you.</p>
+      </div>
+      <div class="card">
+        <h3>Execution risk</h3>
+        <p>Quote too wide and you rarely trade; quote too tight and you trade constantly at thin edge. Fill rate falls as you widen.</p>
+      </div>
     </div>
   </section>
 
-  <div class="wrap">
-    
+  <section>
+    <h2>The model</h2>
+    <p class="muted">The mid-price follows a random walk and settles at a terminal value, so held inventory is genuine P&amp;L risk. The key ingredient the original exercise lacked is a <strong>fill model</strong>: a quote posted a distance &delta; from the mid is filled with probability</p>
+    <div class="formula">P(fill | &delta;) = min(1, e<sup>&minus;k&middot;&delta;</sup>)</div>
+    <p class="muted">Fills decay exponentially as you widen &mdash; so quoting is a real risk&ndash;reward trade-off, not a free lunch. A fraction of arrivals are <strong>informed</strong>: they know the settlement value and trade only when it hurts you, which is what makes the flow toxic.</p>
+  </section>
 
-    <section class="section how-section" id="how-section">
-      <h2 class="section-title">How it was built</h2>
-      
-            <div class="part-reveal" style="opacity: 1">
-              <h3 class="part-title">Part 1: Expected Value &amp; Betting Games</h3>
-              <p class="part-description">Warm up with expected-value computations and optimal stopping rules on dice and card-draw games that mirror the decision logic used later in quoting.</p>
-              
-            </div>
-          
-            <div class="part-reveal" style="opacity: 1">
-              <h3 class="part-title">Part 2: Core Market-Making Mechanics</h3>
-              <p class="part-description">Implement the basic quoting loop: turn a fair value into a bid/ask, execute counterparty trades, and mark cash and inventory to market for P&amp;L.</p>
-              
-            </div>
-          
-            <div class="part-reveal" style="opacity: 1">
-              <h3 class="part-title">Part 3: Risk-Aware Quoting &amp; Belief Updates</h3>
-              <p class="part-description">Extend the quoter to account for adverse selection, uncertainty, and inventory skew, and update fair-value estimates from observed trades and revealed cards.</p>
-              
-            </div>
-          
-            <div class="part-reveal" style="opacity: 1">
-              <h3 class="part-title">Part 4: Episode Simulation &amp; Evaluation</h3>
-              <p class="part-description">Tie everything together by running full market-making episodes and aggregating P&amp;L statistics across many simulated runs.</p>
-              
-            </div>
-          
-    </section>
+  <section>
+    <h2>Policies compared</h2>
+    <div class="cards">
+      <div class="card">
+        <h3 class="lose">Naive symmetric</h3>
+        <p>Fixed spread around the mid. No inventory awareness &mdash; the control case.</p>
+      </div>
+      <div class="card">
+        <h3 class="blue" style="color:var(--blue)">Linear inventory skew</h3>
+        <p>Fixed spread, but the mid is shifted against current inventory to lean away from risk.</p>
+      </div>
+      <div class="card">
+        <h3 class="win">Avellaneda&ndash;Stoikov</h3>
+        <p>Reservation price <em>and</em> optimal spread &mdash; both scale with volatility and time remaining.</p>
+      </div>
+    </div>
+  </section>
 
-    <footer class="footer">
-      <p>Built by <strong>@Goodie-Goody</strong> on <a href="https://deep-ml.com" target="_blank">Deep-ML</a></p>
-    </footer>
-  </div>
+  <section>
+    <h2>Results &mdash; risk-adjusted return by regime</h2>
+    <p class="muted">Mean P&amp;L divided by its standard deviation, across 1,500 episodes per policy per regime. Higher is better. The best policy in each row is highlighted.</p>
+    <table>
+      <thead>
+        <tr><th>Market regime</th><th style="text-align:right">Naive</th><th style="text-align:right">Linear skew</th><th style="text-align:right">Avellaneda&ndash;Stoikov</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Calm / low toxicity</td><td class="num">2.33</td><td class="num">5.17</td><td class="num win">5.20</td></tr>
+        <tr><td>Calm / high toxicity</td><td class="num">0.21</td><td class="num">3.47</td><td class="num win">3.82</td></tr>
+        <tr><td>Volatile / low toxicity</td><td class="num">0.49</td><td class="num win">3.09</td><td class="num">3.04</td></tr>
+        <tr><td>Volatile / high toxicity</td><td class="num lose">&minus;0.90</td><td class="num">1.13</td><td class="num win">2.30</td></tr>
+      </tbody>
+    </table>
+    <p class="legend">In the harshest regime the naive policy posts a <span class="lose">negative mean P&amp;L (&minus;47.5)</span> &mdash; it runs a large position into a moving market. Both skewing policies stay profitable.</p>
+  </section>
 
-  <script>
-    function toggleTheme() {
-      const html = document.documentElement;
-      const isDark = html.style.colorScheme === 'dark';
-      html.style.colorScheme = isDark ? 'light' : 'dark';
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-    }
-    function initTheme() {
-      const saved = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const isDark = saved === 'dark' || (saved === null && prefersDark);
-      document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-    }
-    initTheme();
-    window.scrollToOutput = function() {
-      const output = document.getElementById('output-section');
-      output?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-  </script>
+  <section>
+    <h2>What it shows</h2>
+    <div class="callout">
+      <strong>Skewing beats not-skewing by a mile; adaptivity beats static skewing only when the market is genuinely dangerous.</strong>
+      <p class="muted" style="margin:12px 0 0;">Inventory control is the first-order survival factor &mdash; the naive policy collapses under stress. Between the two skewing rules, a simple linear skew is competitive (and wins raw P&amp;L) in calm markets, while Avellaneda&ndash;Stoikov earns its extra machinery specifically in the volatile, toxic regime it was designed for, by widening exactly when conditions are worst.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Honest limitations</h2>
+    <ul class="tidy">
+      <li>Informed traders know the exact settlement value &mdash; a deliberately strong form of adverse selection.</li>
+      <li>The mid is a constant-volatility arithmetic random walk; real markets have jumps and stochastic volatility.</li>
+      <li>One unit per fill; no queue position, latency, or transaction costs.</li>
+    </ul>
+    <p class="muted" style="margin-top:16px;">This is a research simulation with stated simplifications, not a trading system. Every number here is reproducible from the notebook.</p>
+  </section>
+
+  <footer>
+    Built on a Deep-ML market-making exercise, then extended into a microstructure study.
+    &nbsp;&middot;&nbsp; <a href="https://github.com/Goodie-Goody/market-making-betting-game-simulator">Source on GitHub</a>
+  </footer>
+
+</div>
+<script>
+  function toggleTheme(){
+    const h=document.documentElement;
+    const dark=h.style.colorScheme==='dark';
+    h.style.colorScheme=dark?'light':'dark';
+    localStorage.setItem('theme',dark?'light':'dark');
+  }
+  (function(){
+    const saved=localStorage.getItem('theme');
+    const prefersDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+    document.documentElement.style.colorScheme=(saved==='dark'||(saved===null&&prefersDark))?'dark':'light';
+  })();
+</script>
 </body>
 </html>
