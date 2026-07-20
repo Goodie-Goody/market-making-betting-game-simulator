@@ -1,30 +1,60 @@
-# Market-Making & Betting-Game Simulator
+# Market-Making Microstructure Lab
 
-Build a market-making and betting-game simulator from the ground up: start with expected-value reasoning on dice and card games, then implement a quoting engine that trades against an informed counterparty while managing inventory, adverse selection, and P&L across many episodes.
+A simulation study of the three risks a market maker actually faces —
+**inventory risk, adverse selection, and quote execution** — and which quoting
+policy survives under which market conditions.
 
-## How to run
+This started from a market-making & betting-game exercise (Deep-ML). I refactored
+the quoting logic into a clean, class-based engine and added the ingredient the
+original left out: **order flow that responds to your quotes.** Once fills depend on
+where you quote, quoting decisions have consequences and the comparison below means
+something.
+
+## The question
+
+> Given inventory risk, toxic (informed) flow, and spread-dependent fills, which
+> quoting policy earns the best risk-adjusted return — and does the answer change
+> with the market regime?
+
+## The model
+
+- **Mid price:** random walk over `T` steps, settled at terminal `V = m_T`, so held
+  inventory is real directional risk.
+- **Execution:** uninformed fills follow the Avellaneda–Stoikov Poisson intensity,
+  `P(fill | δ) = min(1, e^(−k·δ))` — fills decay as you widen.
+- **Adverse selection:** a fraction of arrivals are informed, know `V`, and trade
+  only when it profits them (i.e. only when it costs you).
+
+## Policies compared
+
+| Policy | Idea |
+|---|---|
+| Naive symmetric | Fixed spread around the mid, no inventory awareness |
+| Linear inventory skew | Fixed spread, mid shifted linearly against inventory |
+| Avellaneda–Stoikov | Reservation price **and** optimal spread; both scale with volatility and time remaining |
+
+## Headline result
+
+Skewing beats not-skewing by a mile — the naive policy posts a **negative** mean
+P&L under volatile, toxic flow. Between the two skewing policies the result is
+conditional and honest: a linear skew wins raw P&L in calm markets, while
+Avellaneda–Stoikov wins **risk-adjusted** return specifically in the hostile
+(high-volatility, high-toxicity) regime it was designed for, because it widens
+exactly when the market is most dangerous.
+
+## Run it
 
 ```bash
-python scaffold.py
+pip install numpy pandas matplotlib jupyter
+jupyter notebook Market_Making_Microstructure_Lab.ipynb
 ```
 
-## Steps
+Everything runs off a single seeded RNG stream, so the notebook is fully
+reproducible top-to-bottom.
 
-- [x] **1.** expected_value
-- [x] **2.** one_reroll_die_value
-- [x] **3.** pay_per_reroll_die_game
-- [x] **4.** red_black_card_game_value
-- [x] **5.** make_quotes
-- [x] **6.** execute_trade
-- [x] **7.** mark_to_market_pnl
-- [x] **8.** adverse_selection_loss
-- [x] **9.** uncertainty_spread
-- [x] **10.** inventory_skewed_quotes
-- [x] **11.** update_fair_value_from_trade
-- [x] **12.** update_remaining_card_value
-- [x] **13.** run_market_making_episode
-- [x] **14.** summarize_episode_pnls
+## Limitations
 
----
-
-Built on Deep-ML.
+Informed traders know the exact terminal value (a strong form of adverse selection);
+the mid is a constant-volatility arithmetic random walk; one unit per fill, no queue
+position, latency, or fees. These are deliberate simplifications, and each is a
+natural next experiment rather than a rewrite.
