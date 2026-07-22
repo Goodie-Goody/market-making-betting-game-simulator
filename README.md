@@ -44,17 +44,49 @@ Avellaneda–Stoikov wins **risk-adjusted** return specifically in the hostile
 (high-volatility, high-toxicity) regime it was designed for, because it widens
 exactly when the market is most dangerous.
 
+## Repository layout
+
+| File | Role |
+|---|---|
+| `engine.py` | Simulation logic — config, quoting policies, episode engine (the core) |
+| `Market_Making_Microstructure_Lab.ipynb` | The report: theory, experiments, charts, findings |
+| `run.py` | Headless, duration-bounded sweep driver that streams results to Parquet |
+| `sweep_results/` | A short **demo** sweep dataset so the notebook renders with data |
+| `docs/index.html` | Landing page (published via GitHub Pages) |
+| `model.py`, `scaffold.py` | The original Deep-ML exercise these were built on |
+
 ## Run it
 
+**The report (quick):**
+
 ```bash
-pip install numpy pandas matplotlib jupyter
+pip install numpy pandas matplotlib pyarrow jupyter
 jupyter notebook Market_Making_Microstructure_Lab.ipynb
 ```
 
-Everything runs off a single seeded RNG stream, so the notebook is fully
-reproducible top-to-bottom.
+Everything in-notebook runs off a single seeded RNG stream, so it's reproducible
+top-to-bottom.
 
-## Limitations (stated plainly)
+**The long-run study (optional).** Execution is split out of the notebook into a
+headless driver so a kernel never holds a multi-hour loop open. `run.py` samples the
+market parameter space continuously and streams Snappy-compressed Parquet part-files,
+so memory stays flat regardless of runtime:
+
+```bash
+python run.py --minutes 30            # a short run
+python run.py --hours 24 --out runs/full   # the full study (write outside the repo)
+```
+
+The notebook's final section loads whatever `run.py` produced and draws a **win-map**:
+which policy earns the best risk-adjusted return across the volatility × toxicity plane.
+A longer run just fills the grid more densely. The committed `sweep_results/` is a short
+demo; regenerate and re-execute to replace it with your full sweep.
+
+> **Note:** a 24-hour run produces a large Parquet dataset. Write it to a gitignored
+> path (e.g. `runs/`) rather than committing hundreds of MB — the point of publishing is
+> the *win-map and summary*, not the raw exhaust.
+
+## Limitations
 
 Informed traders know the exact terminal value (a strong form of adverse selection);
 the mid is a constant-volatility arithmetic random walk; one unit per fill, no queue
